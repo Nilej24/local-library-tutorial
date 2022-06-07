@@ -1,0 +1,11 @@
+username:
+how-about-a-drink
+
+password:
+YorbcPZu2PveA4BD
+
+url:
+mongodb+srv://how-about-a-drink:YorbcPZu2PveA4BD@cluster0.wiheq.mongodb.net/local_library?retryWrites=true&w=majority
+
+access through shell:
+mongosh "mongodb+srv://cluster0.wiheq.mongodb.net/local_library" --apiVersion 1 --username how-about-a-drink
