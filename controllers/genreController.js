@@ -96,13 +96,24 @@ exports.genre_create_post =  [
 ];
 
 // Display Genre delete form on GET.
-exports.genre_delete_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: Genre delete GET');
+exports.genre_delete_get = async function(req, res, next) {
+  try {
+    const [genre, genre_books] = await Promise.all([
+      Genre.findOne({ _id: req.params.id }),
+      Book.find({ genre: req.params.id }),
+    ]);
+    res.render('genre_delete', { title: 'Delete Genre', genre, genre_books });
+  } catch (err) {
+    next(err);
+  }
 };
 
 // Handle Genre delete on POST.
-exports.genre_delete_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: Genre delete POST');
+exports.genre_delete_post = function(req, res, next) {
+  Genre.deleteOne({ _id: req.params.id }, (err) => {
+    if (err) return next(err);
+    res.redirect('/catalog/genres');
+  });
 };
 
 // Display Genre update form on GET.

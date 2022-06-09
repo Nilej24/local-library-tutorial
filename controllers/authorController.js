@@ -115,10 +115,10 @@ exports.author_delete_post = function(req, res, next) {
 
     async.parallel({
         author: function(callback) {
-          Author.findById(req.body.authorid).exec(callback)
+          Author.findById(req.params.id).exec(callback)
         },
         authors_books: function(callback) {
-          Book.find({ 'author': req.body.authorid }).exec(callback)
+          Book.find({ 'author': req.params.id }).exec(callback)
         },
     }, function(err, results) {
         if (err) { return next(err); }
@@ -130,7 +130,7 @@ exports.author_delete_post = function(req, res, next) {
         }
         else {
             // Author has no books. Delete object and redirect to the list of authors.
-            Author.findByIdAndRemove(req.body.authorid, function deleteAuthor(err) {
+            Author.findByIdAndRemove(req.params.id, function deleteAuthor(err) {
                 if (err) { return next(err); }
                 // Success - go to author list
                 res.redirect('/catalog/authors')

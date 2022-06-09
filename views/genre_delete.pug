@@ -15,13 +15,12 @@ block content
       dl
         each book in genre_books
           dt
-            book.title
-          dd
-            book.summary
+            a(href=book.url) #{book.title}
+
+          dd #{book.summary}
   else
 
     p Do you really want to delete this Genre?
 
     form(method='POST' action='')
-      input(type='hidden' name='genreid' value=genre._id)
       button.btn.btn-primary(type='submit') Delete
