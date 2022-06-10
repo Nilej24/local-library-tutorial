@@ -117,11 +117,42 @@ exports.genre_delete_post = function(req, res, next) {
 };
 
 // Display Genre update form on GET.
-exports.genre_update_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: Genre update GET');
+exports.genre_update_get = async function(req, res, next) {
+  const genre = await Genre.findById(req.params.id);
+  res.render('genre_form', { title: 'Update Genre', genre });
 };
 
 // Handle Genre update on POST.
-exports.genre_update_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: Genre update POST');
-};
+exports.genre_update_post = [
+  body('name')
+  .trim()
+  .isLength({ min: 1 }).withMessage('Genre name required')
+  .escape(),
+
+  async (req, res, next) => {
+    const errors = validationResult(req);
+
+    const genre = new Genre({
+      name: req.body.name,
+      _id: req.params.id,
+    });
+
+    if (!errors.isEmpty()) {
+      res.render('genre_form', { title: 'Update Genre', genre, errors: errors.array() });
+      return;
+    }
+
+    const found_genre = await Genre.findOne({ name: genre.name });
+
+    if (!!found_genre) {
+      res.redirect(found_genre.url);
+      return;
+    }
+
+    Genre.findByIdAndUpdate(req.params.id, genre,  (err, updated_genre) => {
+      if (err) return next(err);
+
+      res.redirect(updated_genre.url);
+    });
+  }
+];

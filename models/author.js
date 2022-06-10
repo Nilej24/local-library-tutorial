@@ -27,7 +27,7 @@ AuthorSchema
     }
     lifetimeString += ' - ';
     if (this.date_of_death) {
-      lifetimeString += this.date_of_birth_formatted;
+      lifetimeString += this.date_of_death_formatted;
     }
     return lifetimeString;
   });
@@ -48,6 +48,18 @@ AuthorSchema
   .virtual('date_of_death_formatted')
   .get(function() {
     return this.date_of_death ? DateTime.fromJSDate(this.date_of_death).toLocaleString(DateTime.DATE_MED) : '';
+  });
+
+AuthorSchema
+  .virtual('date_of_birth_for_form')
+  .get(function() {
+    return this.date_of_birth ? this.date_of_birth.toISOString().substring(0, 10) : '';
+  });
+
+AuthorSchema
+  .virtual('date_of_death_for_form')
+  .get(function() {
+    return this.date_of_death ? this.date_of_death.toISOString().substring(0, 10) : '';
   });
 
 module.exports = mongoose.model('Author', AuthorSchema);

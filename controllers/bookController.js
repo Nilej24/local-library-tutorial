@@ -104,7 +104,7 @@ exports.book_create_post = [
     },
 
     // Validate and sanitize fields.
-    body('title', 'Title must not be empty.').trim().isLength({ min: 1 }).escape(),
+    body('title', 'Title must not be empty.').trim().isLength({ min: 1 }),
     body('author', 'Author must not be empty.').trim().isLength({ min: 1 }).escape(),
     body('summary', 'Summary must not be empty.').trim().isLength({ min: 1 }).escape(),
     body('isbn', 'ISBN must not be empty').trim().isLength({ min: 1 }).escape(),
@@ -161,13 +161,27 @@ exports.book_create_post = [
 ];
 
 // Display book delete form on GET.
-exports.book_delete_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: Book delete GET');
+exports.book_delete_get = async function(req, res, next) {
+    try {
+        const [
+            book,
+            book_bookinstances,
+        ] = await Promise.all([
+            Book.findById(req.params.id),
+            BookInstance.find({ book: req.params.id }),
+        ]);
+        res.render('book_delete', { title: 'Delete Book', book, book_bookinstances });
+    } catch (err) {
+        next(err);
+    }
 };
 
 // Handle book delete on POST.
-exports.book_delete_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: Book delete POST');
+exports.book_delete_post = function(req, res, next) {
+    Book.findByIdAndDelete(req.params.id, (err) => {
+        if(err) return next(err);
+        res.redirect('/catalog/books');
+    });
 };
 
 // Display book update form on GET.
@@ -220,7 +234,7 @@ exports.book_update_post = [
     },
 
     // Validate and sanitize fields.
-    body('title', 'Title must not be empty.').trim().isLength({ min: 1 }).escape(),
+    body('title', 'Title must not be empty.').trim().isLength({ min: 1 }),
     body('author', 'Author must not be empty.').trim().isLength({ min: 1 }).escape(),
     body('summary', 'Summary must not be empty.').trim().isLength({ min: 1 }),
     body('isbn', 'ISBN must not be empty').trim().isLength({ min: 1 }).escape(),
